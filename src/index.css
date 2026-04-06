@@ -15,7 +15,7 @@
     --popover: 40 30% 96%;
     --popover-foreground: 30 10% 15%;
 
-    --primary: 43 72% 45%;
+    --primary: 16 55% 48%;;
     --primary-foreground: 40 30% 96%;
 
     --secondary: 145 35% 28%;
@@ -30,15 +30,21 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 43 40% 75%;
-    --input: 43 40% 75%;
-    --ring: 43 72% 45%;
+    /*--border: 43 40% 75%;
+    --input: 43 40% 75%;*/
+    /*cambiar color de los bordes*/
+    --border: 16 35% 75%;
+    --input: 16 35% 75%;
+    --ring: 16 55% 48%;;
 
     --radius: 0.5rem;
 
-    --gold: 43 72% 45%;
+    /*--gold: 43 72% 45%;
     --gold-light: 43 60% 65%;
-    --gold-dark: 43 72% 30%;
+    --gold-dark: 43 72% 30%;*/
+    --terracotta: 16 55% 48%;
+--terracotta-light: 18 60% 65%;
+--terracotta-dark: 16 60% 35%;
     --green: 145 35% 28%;
     --green-light: 145 25% 45%;
     --cream: 40 30% 96%;
@@ -91,10 +97,15 @@
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
-    font-family: 'Cormorant Garamond', serif;
-  }
+body {
+  @apply bg-background text-foreground;
+  font-family: 'Cormorant Garamond', serif;
+
+  /* Fondo degradado y textura */
+  background: linear-gradient(135deg, hsl(16 10% 10%), hsl(16 15% 20%));
+  background-image: radial-gradient(rgba(198,93,59,0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
 }
 
 @layer utilities {
@@ -110,19 +121,30 @@
     font-family: 'Cormorant Garamond', serif;
   }
 
+  /*degradado
   .gold-gradient {
     background: linear-gradient(135deg, hsl(43 72% 45%), hsl(43 60% 65%), hsl(43 72% 45%));
-  }
+  }*/
+  .gold-gradient {
+  background: linear-gradient(135deg, hsl(16 55% 48%), hsl(18 60% 65%), hsl(16 55% 48%));
+}
 
-  .gold-text {
-    background: linear-gradient(135deg, hsl(43 72% 45%), hsl(43 60% 65%));
+  /*color de texto.gold-text {
+    background: linear-gradient(135deg, hsl(43 72% 45%), hsl(43 60% 65%));*/
+    .gold-text {
+  background: linear-gradient(135deg, hsl(16 55% 48%), hsl(18 60% 65%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
+  /*borde ornamental 
   .ornament-border {
     border: 1px solid hsl(43 40% 75%);
     box-shadow: 0 0 20px hsl(43 72% 45% / 0.1), inset 0 0 20px hsl(43 72% 45% / 0.05);
-  }
+  }*/
+  .ornament-border {
+  border: 1px solid hsl(16 35% 75%);
+  box-shadow: 0 0 20px hsl(16 55% 48% / 0.1), inset 0 0 20px hsl(16 55% 48% / 0.05);
+}
 }

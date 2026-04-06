@@ -1,4 +1,4 @@
-import { createContext, useContext, useRef, useState } from "react";
+import { createContext, useContext, useRef, useState, useEffect } from "react";
 
 interface MusicContextType {
   isPlaying: boolean;
@@ -13,16 +13,16 @@ export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const initAudio = () => {
+  // Inicializar audio solo una vez al montar
+  useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio("/music/boda.mp3");
       audioRef.current.loop = true;
       audioRef.current.volume = 0.7;
     }
-  };
+  }, []);
 
   const playMusic = () => {
-    initAudio();
     audioRef.current?.play();
     setIsPlaying(true);
   };

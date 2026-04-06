@@ -4,26 +4,76 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Heart, Check } from "lucide-react";
+import { useInvitationData } from "@/hooks/useInvitationData";
+import { Check } from "lucide-react";
 
 const RsvpForm = () => {
   const { toast } = useToast();
+  const { nombre, pases } = useInvitationData();
+
+  const maxPases = Number(pases) || 1;
+
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ name: "", guests: "1", message: "" });
+  const [asiste, setAsiste] = useState<null | boolean>(null);
+  const [form, setForm] = useState({
+    guests: "1",
+    message: "",
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim()) {
-      toast({ title: "Por favor ingresa tu nombre", variant: "destructive" });
+
+    if (asiste === null) {
+      toast({
+        title: "Selecciona una opción",
+        description: "Indica si asistirás o no",
+        variant: "destructive",
+      });
       return;
     }
+
+    if (asiste && Number(form.guests) > maxPases) {
+      toast({
+        title: "Cantidad inválida",
+        description: `Solo tienes ${maxPases} pase(s) disponibles`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
-    // TODO: save to database once Cloud is enabled
-    await new Promise((r) => setTimeout(r, 1000));
+
+    try {
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbyZ2Xxw7_BKXQ7YsPehfmwzkkjyzw_Yv12Q7EWBOXczjOTL0GjtTcDhRbKSMVuo8HN5/exec",
+        {
+          method: "POST",
+          mode: "no-cors", // 👈 evita errores en Netlify
+          body: JSON.stringify({
+            nombre,
+            asiste: asiste ? "SI" : "NO",
+            cantidad: asiste ? form.guests : 0,
+            mensaje: form.message,
+          }),
+        }
+      );
+
+      setSubmitted(true);
+
+      toast({
+        title: "¡Confirmación enviada!",
+        
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo enviar la confirmación",
+        variant: "destructive",
+      });
+    }
+
     setLoading(false);
-    setSubmitted(true);
-    toast({ title: "¡Confirmación recibida!", description: "Gracias por confirmar tu asistencia." });
   };
 
   if (submitted) {
@@ -35,9 +85,11 @@ const RsvpForm = () => {
           className="max-w-md mx-auto text-center ornament-border p-12 bg-card"
         >
           <Check className="w-12 h-12 text-accent mx-auto mb-4" />
-          <p className="font-script text-4xl text-primary mb-2">¡Gracias!</p>
-          <p className="font-body text-muted-foreground text-lg">
-            Hemos recibido tu confirmación. ¡Nos vemos pronto!
+        
+          <p className="text-muted-foreground text-lg">
+            {asiste
+              ? "Nos alegra contar contigo en este día especial."
+              : "Gracias por avisarnos."}
           </p>
         </motion.div>
       </section>
@@ -46,20 +98,19 @@ const RsvpForm = () => {
 
   return (
     <section className="py-20 px-4">
+      {/* TITULO */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="text-center mb-10"
+        className="text-center mb-8"
       >
-        <p className="font-script text-5xl text-primary mb-3">Confirma tu Asistencia</p>
-        <div className="flex items-center justify-center gap-4">
-          <div className="h-px w-20 bg-primary/30" />
-          <Heart className="w-4 h-4 text-primary/50" fill="currentColor" />
-          <div className="h-px w-20 bg-primary/30" />
-        </div>
+        <p className="font-script text-5xl text-primary mb-4">
+          Confirma tu Asistencia
+        </p>
       </motion.div>
 
+      {/* FORM */}
       <motion.form
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -67,50 +118,91 @@ const RsvpForm = () => {
         onSubmit={handleSubmit}
         className="max-w-md mx-auto ornament-border p-8 bg-card space-y-6"
       >
-        <div>
-          <label className="font-display text-sm tracking-widest uppercase text-foreground mb-2 block">
-            Nombre completo
-          </label>
-          <Input
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="Tu nombre"
-            className="bg-background/50 border-primary/30 font-body"
-            maxLength={100}
-          />
+        {/* MENSAJE */}
+        <p className="text-muted-foreground max-w-xl mx-auto text-lg leading-relaxed text-center">
+          Decir "no puedo asistir" no es descortés, es honesto. <br />
+          Confirma tu asistencia antes del{" "}
+          <span className="text-primary font-bold tracking-wide">
+            10 de Mayo del 2026
+          </span>{" "}
+          para mantenerte en nuestra lista de invitados y unirte a nuestra
+          celebración.
+        </p>
+
+        {/* BOTONES */}
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setAsiste(true)}
+            className={`w-full ${
+              asiste === true ? "gold-gradient text-white" : ""
+            }`}
+          >
+            Sí asistiré
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setAsiste(false)}
+            className={`w-full ${
+              asiste === false ? "gold-gradient text-white" : ""
+            }`}
+          >
+            No podré asistir
+          </Button>
         </div>
+
+        {/* CANTIDAD */}
+        {asiste && (
+          <div>
+            <label className="text-sm uppercase tracking-widest mb-2 block">
+              Cantidad de asistentes
+            </label>
+
+            <Input
+              type="number"
+              min="1"
+              max={maxPases}
+              value={form.guests}
+              onChange={(e) =>
+                setForm({ ...form, guests: e.target.value })
+              }
+              className="bg-background/50 border-primary/30"
+            />
+
+            <p className="text-xs text-muted-foreground mt-1">
+              Máximo permitido: {maxPases}
+            </p>
+          </div>
+        )}
+
+        {/* MENSAJE OPCIONAL */}
         <div>
-          <label className="font-display text-sm tracking-widest uppercase text-foreground mb-2 block">
-            Número de acompañantes
+          <label className="text-sm uppercase tracking-widest mb-2 block">
+            Mensaje (opcional)
           </label>
-          <Input
-            type="number"
-            min="1"
-            max="10"
-            value={form.guests}
-            onChange={(e) => setForm({ ...form, guests: e.target.value })}
-            className="bg-background/50 border-primary/30 font-body"
-          />
-        </div>
-        <div>
-          <label className="font-display text-sm tracking-widest uppercase text-foreground mb-2 block">
-            Mensaje para los novios
-          </label>
+
           <Textarea
             value={form.message}
-            onChange={(e) => setForm({ ...form, message: e.target.value })}
-            placeholder="Escribe un mensaje especial..."
-            className="bg-background/50 border-primary/30 font-body"
-            maxLength={500}
-            rows={4}
+            onChange={(e) =>
+              setForm({ ...form, message: e.target.value })
+            }
+            placeholder="Escribe un mensaje especial para los futuros esposos..."
+            className="bg-background/50 border-primary/30"
+            maxLength={300}
+            rows={3}
           />
         </div>
+
+        {/* BOTON */}
         <Button
           type="submit"
           disabled={loading}
-          className="w-full gold-gradient text-primary-foreground font-display tracking-widest uppercase hover:opacity-90"
+          className="w-full gold-gradient text-primary-foreground uppercase tracking-widest"
         >
-          {loading ? "Enviando..." : "Confirmar Asistencia"}
+          {loading ? "Enviando..." : "Confirmar Respuesta"}
         </Button>
       </motion.form>
     </section>

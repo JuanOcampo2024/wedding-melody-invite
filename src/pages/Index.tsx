@@ -1,11 +1,15 @@
 import { useState, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import CoverSection from "@/components/wedding/CoverSection";
+import PhotoSparkles from "@/components/wedding/PhotoSparkles";
 import PhotoGallery from "@/components/wedding/PhotoGallery";
+import GuestMessage from "@/components/wedding/GuestMessage";
 import EventInfo from "@/components/wedding/EventInfo";
 import Countdown from "@/components/wedding/Countdown";
 import RsvpForm from "@/components/wedding/RsvpForm";
+import PhotoGalleryFoot from "@/components/wedding/PhotoGalleryFoot";
 import Footer from "@/components/wedding/Footer";
+import GalleryQR from "@/components/wedding/GalleryQR";
 
 const Index = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,7 +26,16 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+  className="min-h-screen"
+    
+  style={{
+    background: `
+      radial-gradient(circle at top, #f8f3eb, #e9dcc6),
+      linear-gradient(180deg, #f5efe6 0%, #ede4d3 100%)`,
+  }}
+>
+   <PhotoSparkles />
       {/* Audio element — user replaces src with their MP3 */}
       <audio ref={audioRef} loop preload="auto">
         {/* Replace the src below with your MP3 file URL */}
@@ -40,10 +53,12 @@ const Index = () => {
           transition={{ duration: 1, delay: 0.3 }}
         >
           <PhotoGallery position="top" />
+          <GuestMessage/>
           <EventInfo />
           <Countdown />
           <RsvpForm />
-          <PhotoGallery position="bottom" />
+          <GalleryQR/>
+          <PhotoGalleryFoot/>
           <Footer />
         </motion.div>
       )}
