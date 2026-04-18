@@ -97,7 +97,7 @@ const PhotoGallery = ({ position }: PhotoGalleryProps) => {
                 Padres de la Novia
               </p>
               <p className="text-muted-foreground">
-                Sr. Librado Antonio Rios Castro
+                Sr. Libardo Antonio Rios Castro
               </p>
               <p className="text-muted-foreground">
                 Sra. Marta Dolly Castro Tabares
